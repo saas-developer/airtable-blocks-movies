@@ -1,9 +1,11 @@
 import {initializeBlock} from '@airtable/blocks/ui';
 import React from 'react';
+import Movies from './movies/Movies'
 
 function HelloWorldBlock() {
-    // YOUR CODE GOES HERE
-    return <div>Hello world 🚀🚀🚀🚀🚀</div>;
+    return (
+        <Movies />
+    );
 }
 
 initializeBlock(() => <HelloWorldBlock />);
