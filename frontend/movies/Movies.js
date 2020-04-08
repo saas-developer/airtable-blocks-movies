@@ -14,6 +14,20 @@ function Movies() {
             <div>Name : {base.name}</div>
 
             <div>Number of tables: {tables.length}</div>
+            
+            <h3>Table Information</h3>
+            {
+                tables.map((table) => {
+                    return (
+                        <div>
+                            <br />
+                            <div>Name: {table.name}</div>
+                            <div>ID: {table.id}</div>
+                            <div>Description: {table.description}</div>
+                        </div>
+                    )
+                })
+            }
         </div>
     )
 }
