@@ -1,5 +1,6 @@
 import React from 'react';
 import { useBase } from '@airtable/blocks/ui'
+import MoviesList from './MoviesList';
 
 function Movies() {
     const base = useBase();
@@ -24,6 +25,9 @@ function Movies() {
                             <div>Name: {table.name}</div>
                             <div>ID: {table.id}</div>
                             <div>Description: {table.description}</div>
+
+                            <h4>Records Information</h4>
+                            <MoviesList table={table}/>
                         </div>
                     )
                 })
