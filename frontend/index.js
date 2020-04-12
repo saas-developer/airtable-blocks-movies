@@ -4,7 +4,9 @@ import Movies from './movies/Movies'
 
 function HelloWorldBlock() {
     return (
-        <Movies />
+        <div style={{ padding: 20 }}>
+            <Movies />
+        </div>
     );
 }
 
