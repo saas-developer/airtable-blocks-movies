@@ -5,9 +5,7 @@ import MoviesApplication from './MoviesApplication';
 
 function Movies() {
     const base = useBase();
-    console.log('base', base);
     const tables = base.tables;
-    console.log('tables', tables);
 
     return (
         <div>

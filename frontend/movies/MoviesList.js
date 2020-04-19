@@ -6,7 +6,6 @@ export default function MoviesList(props) {
         table
     } = props;
     const records = useRecords(table);
-    console.log('records', records);
     const fields = table.fields;
 
     return (

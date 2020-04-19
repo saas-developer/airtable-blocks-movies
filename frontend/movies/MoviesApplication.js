@@ -1,11 +1,12 @@
 import React from 'react';
 import { cursor } from '@airtable/blocks';
-import { Box, Button, useBase, useLoadable, useWatchable, useRecordById } from '@airtable/blocks/ui';
+import { useGlobalConfig, Box, Button, useBase, useLoadable, useWatchable, useRecordById } from '@airtable/blocks/ui';
+import Settings from './Settings';
 
 export default function MoviesApplication() {
     const base = useBase();
+    const globalConfig = useGlobalConfig();
     useLoadable(cursor);
-
     useWatchable(cursor, ['activeTableId', 'selectedRecordIds']);
 
     // const record = useRecordById(cursor.activeTableId, cursor.selectedRecordIds);
@@ -19,12 +20,11 @@ export default function MoviesApplication() {
     } catch (e) {
         record = null;
     }
-    console.log('record', record);
 
     const handleFetchRatingClick = (record) => {
         const name = record.getCellValueAsString('Name');
 
-        const apiKey = '88f4e29a';
+        const apiKey = globalConfig.get(['settings', 'omdbApiKey']);
         // Make API call to OMDB API here
         const omdbApiUrl = 'https://cors-anywhere.herokuapp.com/https://www.omdbapi.com/?t=' +name + '&apikey=' + apiKey ;
 
@@ -42,7 +42,6 @@ export default function MoviesApplication() {
             return response.json();
         })
         .then((response) => {
-            console.log('response', response);
             const imdbRating = response.imdbRating;
             console.log('imdbRating', imdbRating);
 
@@ -53,7 +52,6 @@ export default function MoviesApplication() {
         })
         .catch( (error) => {
             console.log('error ', error);
-            throw error;
         });
 
     }
@@ -67,6 +65,7 @@ export default function MoviesApplication() {
     return (
         <div>
             <h2>Movies Application</h2>
+            <Settings />
             <div>
                 Selected Record Ids: {cursor.selectedRecordIds.join(' ')}
             </div>
