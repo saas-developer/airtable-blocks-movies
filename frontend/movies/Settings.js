@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { cursor } from '@airtable/blocks';
-import { useGlobalConfig, Label, Box, Input, Button, Dialog, Heading } from '@airtable/blocks/ui';
+import { useGlobalConfig, Label, Box, Input, InputSynced, Button, Dialog, Heading } from '@airtable/blocks/ui';
 
 export default function Settings() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -12,17 +12,6 @@ export default function Settings() {
 
     const handleSettingsLinkClick = () => {
         setIsDialogOpen(true)
-    }
-
-    const handleOmbbApiKeyChange= (event) => {
-        const value = event.target.value;
-        if (globalConfig.hasPermissionToSetPaths([
-            { path: ['settings', 'omdbApiKey'], value: value }
-        ])) {
-            globalConfig.setPathsAsync([
-                { path: ['settings', 'omdbApiKey'], value: value }
-            ]);
-        }
     }
 
     return (
@@ -41,11 +30,12 @@ export default function Settings() {
                     <Heading>Settings</Heading>
 
                     <Label htmlFor="my-input">Settings</Label>
-                    <Input
-                        id="omdbapi-key"
-                        value={omdbApiKey}
-                        onChange={handleOmbbApiKeyChange}
+                    <InputSynced
+                    	globalConfigKey={['settings', 'omdbApiKey']}
+                    	placeholder="OMDB Api Key"
+                    	width="320px"
                     />
+                    
                     
                     <Button onClick={() => setIsDialogOpen(false)}>Close</Button>
                 </Dialog>
