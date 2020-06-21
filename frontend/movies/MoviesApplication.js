@@ -2,6 +2,7 @@ import React from 'react';
 import { cursor } from '@airtable/blocks';
 import { useGlobalConfig, Box, Button, useBase, useLoadable, useWatchable, useRecordById } from '@airtable/blocks/ui';
 import Settings from './Settings';
+import SelectedRecord from './SelectedRecord';
 
 export default function MoviesApplication() {
     const base = useBase();
@@ -9,51 +10,39 @@ export default function MoviesApplication() {
     useLoadable(cursor);
     useWatchable(cursor, ['activeTableId', 'selectedRecordIds']);
 
-    // const record = useRecordById(cursor.activeTableId, cursor.selectedRecordIds);
-
-    const table = base.getTableById(cursor.activeTableId);
-    const queryResult = table.selectRecords();
-    let record = null;
-
-    try {
-        record = queryResult.getRecordById(cursor.selectedRecordIds[0]);
-    } catch (e) {
-        record = null;
+    let table;
+    if (cursor.activeTableId && cursor.selectedRecordIds.length) {
+        table = base.getTableById(cursor.activeTableId);
     }
 
-    const handleFetchRatingClick = (record) => {
+    const handleFetchRatingClick = async (record) => {
         const name = record.getCellValueAsString('Name');
 
         const apiKey = globalConfig.get(['settings', 'omdbApiKey']);
         // Make API call to OMDB API here
         const omdbApiUrl = 'https://cors-anywhere.herokuapp.com/https://www.omdbapi.com/?t=' +name + '&apikey=' + apiKey ;
 
-        fetch(omdbApiUrl, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then((response) => {
-            if (!response.ok) {
-                return response.json().then(err => {throw err});
-            }
-            return response.json();
-        })
-        .then((response) => {
-            const imdbRating = response.imdbRating;
+        try {
+            const response = await fetch(omdbApiUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+            const imdbRating = data.imdbRating;
             console.log('imdbRating', imdbRating);
 
             updateRecord(record, {
                 'IMDB Rating': imdbRating
             });
+            
             return response;
-        })
-        .catch( (error) => {
-            console.log('error ', error);
-        });
-
+        } catch (e) {
+            console.log('e ', e);
+        }
     }
 
     const updateRecord = (record, recordFields) => {
@@ -69,29 +58,16 @@ export default function MoviesApplication() {
             <div>
                 Selected Record Ids: {cursor.selectedRecordIds.join(' ')}
             </div>
-            <Box
-                border="thick"
-                backgroundColor="white"
-                borderRadius="large"
-                padding={2}
-                height={100}
-                overflow="hidden"
-              >
-                {
-                    record && record.getCellValueAsString('Name')
-                }
-                {
-                    !record && <div>Please select a record</div>
-                }
-
-                <div>
-                    <Button
-                        onClick={() => handleFetchRatingClick(record)}
-                        size="large"
-                    >Fetch Ratings
-                    </Button>
-                </div>
-              </Box>
+            
+            {
+                cursor.activeTableId && cursor.selectedRecordIds.length ?
+                <SelectedRecord
+                    table={table}
+                    recordId={cursor.selectedRecordIds[0]}
+                    handleFetchRatingClick={handleFetchRatingClick}
+                /> :
+                null
+            }
             
         </div>
 
